@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Salam!</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/style.css"/>
+		<link href='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.css' rel='stylesheet' />
+		<script src='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.js'></script>
+		<script src='js/echo.min.js'></script>
+		<script src='js/map.js'></script>
+	</head>
+	<body>
+	<h1 id="page-title">{{.Site.Title}}</h1>
+
+	{{ $total := len .Data.Pages }}
+	{{ range $index, $element := .Data.Pages }}
+		{{ $post_number := sub $total $index }}
+		{{ $element.Scratch.Set "idx" $post_number }}
+		{{ $element.Render "single" }}
+	{{ end }}
+
+	<div id="map"></div>
+	</body>
+</html>

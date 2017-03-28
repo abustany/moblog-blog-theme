@@ -1,0 +1,8 @@
+{{ $idx := $.Scratch.Get "idx"}}
+<article class="post" {{ if .Params.position }}data-position="{{ .Params.position }}"{{ end }} data-index="{{$idx}}">
+	<h2 id="post-{{$idx}}">#{{$idx}} {{ .Title }}</h2>
+
+	<p class="post-date">{{ .Date.Format "Mon Jan 2, 2006 15:04 GMT" }}</p>
+
+	{{ .Content }}
+</article>

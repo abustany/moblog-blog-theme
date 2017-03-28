@@ -1,0 +1,63 @@
+body {
+	background-color: #FAFAFA;
+	color: #333333;
+	font-family: sans-serif;
+	font-size: 14pt;
+	margin-left: 10%;
+	margin-right: 10%;
+	font-weight: 100;
+}
+
+a, a:visited, a:active, a:link {
+	color: #901F0F;
+}
+
+h1 {
+	text-align: center;
+	font-size: 48pt;
+	font-weight: 100;
+}
+
+img {
+	max-width: 100%;
+}
+
+#map {
+	position: fixed;
+	right: 0;
+	width: 50%;
+	top: 144pt;
+	bottom: 0;
+}
+
+article.post {
+	width: 40%;
+}
+
+.post h2 {
+	margin-bottom: .2em;
+	font-weight: 100;
+}
+
+p.post-date {
+	margin-top: .2em;
+}
+
+.map-marker {
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	border-radius: 50%;
+	background-color: #333333;
+	color: white;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+img.image-loading {
+	width: 64px;
+	height: 64px;
+	display: block;
+	padding: 1em;
+}
