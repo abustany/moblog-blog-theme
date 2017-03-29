@@ -30,11 +30,11 @@ function init() {
 	var markers = fetchMarkers();
 	map = initMap(markers);
 	adjustMapTop();
-	showMarkerForCurrentArticle(markers);
+	showMarkerForCurrentArticle(markers, true);
 
 	bindEvent(window, 'scroll', function() {
 		adjustMapTop();
-		showMarkerForCurrentArticle(markers);
+		showMarkerForCurrentArticle(markers, false);
 	});
 }
 
@@ -158,7 +158,7 @@ function adjustMapTop() {
 var panTimeoutId = null;
 var lastShownMarker = null;
 
-function showMarkerForCurrentArticle(markers) {
+function showMarkerForCurrentArticle(markers, lookBelow) {
 	"use strict";
 
 	var windowHeight = getWindowHeight();
@@ -175,7 +175,7 @@ function showMarkerForCurrentArticle(markers) {
 		}
 
 		// Stop as soon as we find an article that is in the window
-		if (bb.top > 0 && bb.top < windowHeight) {
+		if (bb.top > 0 && ((bb.top < windowHeight) || lookBelow)) {
 			topMost = article;
 
 			// Only break the loop if we have a marker for this post
