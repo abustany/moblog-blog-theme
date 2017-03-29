@@ -20,13 +20,8 @@ var map;
 function init() {
 	"use strict";
 
-	echo.init({
-		callback: function(el, op) {
-			if (op === 'load') {
-				el.className='';
-			}
-		},
-	});
+	initLazyLoading();
+	initLightbox();
 	var markers = fetchMarkers();
 	map = initMap(markers);
 	adjustMapTop();
@@ -36,6 +31,24 @@ function init() {
 		adjustMapTop();
 		showMarkerForCurrentArticle(markers, false);
 	});
+}
+
+function initLazyLoading() {
+	"use strict";
+
+	echo.init({
+		callback: function(el, op) {
+			if (op === 'load') {
+				el.className='';
+			}
+		},
+	});
+}
+
+function initLightbox() {
+	"use strict";
+
+	baguetteBox.run('article.post');
 }
 
 function forAllArticles(callback) {

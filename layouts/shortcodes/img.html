@@ -1,1 +1,3 @@
-<img src="loading.png" class="image-loading" data-echo="{{ .Get "src" }}" {{ if or (.Get "alt") (.Get "caption") }}alt="{{ with .Get "alt"}}{{.}}{{else}}{{ .Get "caption" }}{{ end }}"{{ end }} />
+<a href="{{ .Get "src" }}">
+	<img src="loading.png" class="image-loading" data-echo="{{ .Get "src" }}" {{ if or (.Get "alt") (.Get "caption") }}alt="{{ with .Get "alt"}}{{.}}{{else}}{{ .Get "caption" }}{{ end }}"{{ end }} href="{{ .Get "src" }}" />
+</a>
