@@ -18,8 +18,36 @@ h1 {
 	font-weight: 100;
 }
 
-img {
+div.image-frame {
+	position: relative;
+}
+
+.image-frame img {
 	max-width: 100%;
+	height: auto;
+
+	transition-property: opacity;
+	transition-duration: 1s;
+}
+
+img.image-loading {
+	opacity: 0;
+}
+
+img.image-loaded {
+	opacity: 1;
+}
+
+.image-frame a {
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.image-frame svg {
+	max-width: 100%;
+	height: auto;
 }
 
 #map {
@@ -54,11 +82,4 @@ p.post-date {
 	text-align: center;
 	font-weight: bold;
 	cursor: pointer;
-}
-
-img.image-loading {
-	width: 64px;
-	height: 64px;
-	display: block;
-	padding: 1em;
 }

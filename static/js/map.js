@@ -39,7 +39,7 @@ function initLazyLoading() {
 	echo.init({
 		callback: function(el, op) {
 			if (op === 'load') {
-				el.className='';
+				el.className='image-loaded';
 			}
 		},
 	});

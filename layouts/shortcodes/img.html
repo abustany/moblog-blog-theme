@@ -1,3 +1,17 @@
-<a href="{{ .Get "src" }}">
-	<img src="loading.png" class="image-loading" data-echo="{{ .Get "src" }}" {{ if or (.Get "alt") (.Get "caption") }}alt="{{ with .Get "alt"}}{{.}}{{else}}{{ .Get "caption" }}{{ end }}"{{ end }} href="{{ .Get "src" }}" />
-</a>
+<div class="image-frame">
+  {{ with (imageConfig (path.Join "static" (.Get "src"))) }}
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 {{.Width}} {{.Height}}" width="{{.Width}}" height="{{.Height}}">
+      <rect x="0" y="0" width="{{.Width}}" height="{{.Height}}" style="fill:#00000000" />
+    </svg>
+  {{end}}
+  <a href="{{ .Get "src" }}">
+    <img
+	  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      class="image-loading"
+      data-echo="{{ .Get "src" }}"
+      {{ if or (.Get "alt") (.Get "caption") }}
+        alt="{{ with .Get "alt"}}{{.}}{{else}}{{ .Get "caption" }}{{ end }}"
+      {{ end }}
+    />
+  </a>
+</div>
