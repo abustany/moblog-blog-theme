@@ -9,6 +9,18 @@
 		<link href="{{ .RSSLink }}" rel="feed" type="application/rss+xml" title="{{ .Site.Title }}" />
 		{{ end }}
 		<link rel="stylesheet" href="css/style.css"/>
+        <style type="text/css">
+/* Those parts of the style are here since they use configuration variables */
+
+body {
+	background-color: {{ default "#FAFAFA" .Site.Params.backgroundColor }};
+    color: {{ default "#333333" .Site.Params.foregroundColor }};
+}
+
+a, a:visited, a:active, a:link {
+    color: {{ default "#901F0F" .Site.Params.linkColor }};
+}
+        </style>
 		<link href='https://api.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css' rel='stylesheet' />
 		<link rel="stylesheet" href="css/baguetteBox.min.css" />
 		<script src='https://api.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js'></script>
