@@ -22,6 +22,7 @@ function init() {
 
 	initLazyLoading();
 	initLightbox();
+    initServiceWorker();
 	var markers = fetchMarkers();
 	map = initMap(markers);
 	adjustMapTop();
@@ -49,6 +50,150 @@ function initLightbox() {
 	"use strict";
 
 	baguetteBox.run('article.post');
+}
+
+function isServiceWorkerSupported() {
+    return 'serviceWorker' in navigator;
+}
+
+function initServiceWorker() {
+    "use strict";
+
+    if (!isServiceWorkerSupported()) {
+        return;
+    }
+
+    navigator.serviceWorker.register('/serviceWorker.js')
+        .then(function(reg) {
+            console.log('Successfully registered service worker');
+        })
+        .catch(function(err) {
+            console.log('Error while registering service worker', err);
+        });
+
+    initSubscriptionUi();
+}
+
+function initSubscriptionUi() {
+    navigator.serviceWorker.ready
+        .then(function(registration) {
+            return registration.pushManager.getSubscription()
+                .then(function(sub) {
+                    document.getElementById('link-subscribe').style.display = (!!sub ? 'none' : 'block');
+                    document.getElementById('link-unsubscribe').style.display = (!!sub ? 'block' : 'none');
+                    pushSubscription = sub;
+                });
+        })
+        .catch(function(err) {
+            console.log('Error while checking push subscription', err);
+        });
+}
+
+// This function is needed because Chrome doesn't accept a base64 encoded string
+// as value for applicationServerKey in pushManager.subscribe yet
+// https://bugs.chromium.org/p/chromium/issues/detail?id=802280
+function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+
+    for (var i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+}
+
+function onSubscribe() {
+    if (!isServiceWorkerSupported()) {
+        alert('Your browser does not support push notifications :-(');
+        return;
+    }
+
+    navigator.serviceWorker.ready
+        .then(function(registration) {
+            return registration.pushManager.getSubscription()
+                .then(function(sub) {
+                    if (sub) {
+                        console.log('A push subscription already exists');
+                        return sub;
+                    }
+
+                    return fetch('/notifications/vapidPublicKey')
+                        .then(function(res) {
+                            if (res.status !== 200) {
+                                throw new Error('Unexpected HTTP status while fetching public VAPID key: ' + res.status);
+                            }
+
+                            return res.text();
+                        })
+                        .then(function(publicKey) {
+                            console.log('Registering a new push subscription');
+                            return registration.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: urlBase64ToUint8Array(publicKey),
+                            });
+                        });
+                })
+                .then(function(sub) {
+                    return fetch('/notifications/register', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(sub)
+                    }).then(function(res) {
+                        if (res.status !== 201) {
+                            throw new Error('Unexpected HTTP status while registering subscription: ' + res.status);
+                        }
+                    });
+                });
+        })
+        .then(function() {
+            console.log('Sucessfully registered push notifications');
+            initSubscriptionUi();
+        })
+        .catch(function(err) {
+            console.log('Error while subscribing to notifications', err);
+        });
+}
+
+var pushSubscription = null;
+
+function onUnsubscribe() {
+    if (!pushSubscription) {
+        return;
+    }
+
+    pushSubscription.unsubscribe()
+        .then(function(ok) {
+            if (!ok) {
+                throw new Error('unsubscribe returned false');
+            }
+
+            console.log('Unsubscribed from push notifications');
+            initSubscriptionUi();
+        })
+        .then(function() {
+            return fetch('/notifications/unregister', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(pushSubscription)
+            }).then(function(res) {
+                if (res.status !== 200) {
+                    throw new Error('Unexpected HTTP status while registering subscription: ' + res.status);
+                }
+            });
+        })
+        .catch(function(err) {
+            console.log('Error while unsubscribing', err);
+        });
 }
 
 function forAllArticles(callback) {

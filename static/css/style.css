@@ -12,6 +12,16 @@ h1 {
 	font-weight: 100;
 }
 
+.banner-subscribe {
+    position: absolute;
+    top: 2em;
+    right: 2em;
+}
+
+#link-subscribe, #link-unsubscribe {
+    display: none;
+}
+
 div.image-frame {
 	position: relative;
 }

@@ -31,6 +31,11 @@ a, a:visited, a:active, a:link {
 	<body>
 	<h1 id="page-title">{{.Site.Title}}</h1>
 
+    <div class="banner-subscribe">
+        <a href="#" onclick="onSubscribe()" id="link-subscribe">Subscribe to updates!</a>
+        <a href="#" onclick="onUnsubscribe()" id="link-unsubscribe">Unsubscribe from updates</a>
+    </div>
+
 	{{ $total := len .Data.Pages }}
 	{{ range $index, $element := .Data.Pages }}
 		{{ $post_number := sub $total $index }}
