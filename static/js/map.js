@@ -38,6 +38,7 @@ function initLazyLoading() {
 	"use strict";
 
 	echo.init({
+    offset: 2000,
 		callback: function(el, op) {
 			if (op === 'load') {
 				el.className='image-loaded';
