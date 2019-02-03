@@ -4,11 +4,13 @@
 		<title>{{.Site.Title}}</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		{{ if .RSSLink }}
 		<link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
 		<link href="{{ .RSSLink }}" rel="feed" type="application/rss+xml" title="{{ .Site.Title }}" />
 		{{ end }}
 		<link rel="stylesheet" href="css/style.css"/>
+		<link rel="stylesheet" href="css/fullsize.css" media="(min-device-width: 500px)" />
         <style type="text/css">
 /* Those parts of the style are here since they use configuration variables */
 
@@ -43,6 +45,10 @@ a, a:visited, a:active, a:link {
 		{{ $element.Render "single" }}
 	{{ end }}
 
-	<div id="map"></div>
+	<div id="map" class="map-hidden"></div>
+
+	<div id="map-toggle">
+		<img src="icons/map.svg">
+	</div>
 	</body>
 </html>

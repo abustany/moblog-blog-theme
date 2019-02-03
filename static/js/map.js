@@ -25,11 +25,12 @@ function init() {
     initServiceWorker();
 	var markers = fetchMarkers();
 	map = initMap(markers);
-	adjustMapTop();
+
+  adjustMapTop();
 	showMarkerForCurrentArticle(markers, true);
 
 	bindEvent(window, 'scroll', function() {
-		adjustMapTop();
+    adjustMapTop();
 		showMarkerForCurrentArticle(markers, false);
 	});
 }
@@ -224,6 +225,10 @@ function initMap(markers) {
 		markers[idx].addTo(map);
 	}
 
+  document.getElementById('map-toggle').addEventListener('click', function() {
+    document.getElementById('map').classList.toggle('map-hidden');
+  });
+
 	return map;
 }
 
@@ -298,17 +303,29 @@ function getWindowHeight() {
 	return document.documentElement.offsetHeight;
 }
 
+var fullsizeMediaQuery = window.matchMedia('(min-device-width: 500px)');
+
+fullsizeMediaQuery.addListener(function() {
+  adjustMapTop();
+});
+
 function adjustMapTop() {
 	"use strict";
 
-	var mapDiv = document.getElementById('map');
-	var title = document.getElementById('page-title');
-	var rect = title.getBoundingClientRect();
-	var bottomMargin = parseInt(getStyle(title).marginBottom);
-	var mapTop = rect.bottom + bottomMargin;
+  var mapDiv = document.getElementById('map');
+  var mapTop;
 
-	if (mapTop < 0)
-		mapTop = 0;
+  if (fullsizeMediaQuery.matches) {
+    var title = document.getElementById('page-title');
+    var rect = title.getBoundingClientRect();
+    var bottomMargin = parseInt(getStyle(title).marginBottom);
+    var mapTop = rect.bottom + bottomMargin;
+
+    if (mapTop < 0)
+      mapTop = 0;
+  } else {
+    mapTop = 0;
+  }
 
 	mapDiv.style.top = mapTop + 'px';
 	map.resize();

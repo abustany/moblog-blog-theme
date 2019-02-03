@@ -1,0 +1,30 @@
+html {
+  font-size: 14pt;
+}
+
+body {
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+article.post {
+	width: 40%;
+}
+
+#map-toggle {
+	display: none;
+}
+
+#map {
+	position: fixed;
+	left: auto;
+	width: 50%;
+	height: auto;
+	top: 144pt;
+	bottom: 0;
+	box-shadow: unset;
+}
+
+#map.map-hidden {
+	transform: none;
+}
