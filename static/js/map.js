@@ -216,7 +216,7 @@ function initMap(markers) {
 	var map = new mapboxgl.Map({
 		container: 'map',
 		style: 'mapbox://styles/mapbox/streets-v9',
-		zoom: 12,
+		zoom: 8,
 	});
 
 	map.addControl(new mapboxgl.NavigationControl());
