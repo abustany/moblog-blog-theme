@@ -28,3 +28,7 @@ article.post {
 #map.map-hidden {
 	transform: none;
 }
+
+#footer {
+	width: 40%;
+}

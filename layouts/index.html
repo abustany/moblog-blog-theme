@@ -50,5 +50,18 @@ a, a:visited, a:active, a:link {
 	<div id="map-toggle">
 		<img src="icons/map.svg">
 	</div>
+
+	{{ if .Site.Params.Author }}
+	<div id="footer">
+		&copy;
+		{{ if .Site.Params.Email }}
+		<a href="mailto:{{.Site.Params.Email}}">
+		{{ end }}
+		 {{ .Site.Params.Author }}
+		{{ if .Site.Params.Email }}
+		</a>
+		{{ end }}
+	</div>
+	{{ end }}
 	</body>
 </html>
