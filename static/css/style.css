@@ -28,10 +28,10 @@ h1 {
 	width: 1em;
 	cursor: pointer;
 	opacity: .15;
-}
 
-#button-prev:hover, #button-next:hover {
-	opacity: 1;
+	/* Increase the clickability since the image is small */
+	padding: 1em;
+	margin: -1em;
 }
 
 #button-prev {

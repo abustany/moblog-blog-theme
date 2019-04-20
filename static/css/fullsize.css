@@ -11,6 +11,10 @@ article.post {
 	width: 40%;
 }
 
+#button-prev:hover, #button-next:hover {
+	opacity: 1;
+}
+
 #map-toggle {
 	display: none;
 }
