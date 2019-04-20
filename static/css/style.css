@@ -22,6 +22,26 @@ h1 {
     display: none;
 }
 
+#button-prev, #button-next {
+	position: fixed;
+	left: 1em;
+	width: 1em;
+	cursor: pointer;
+	opacity: .15;
+}
+
+#button-prev:hover, #button-next:hover {
+	opacity: 1;
+}
+
+#button-prev {
+	top: calc(50% - 3em);
+}
+
+#button-next {
+	top: calc(50% + 3em);
+}
+
 article.post {
 	line-height: 1.5em;
 }

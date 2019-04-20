@@ -43,6 +43,8 @@ function init() {
   fullsizeMediaQuery.addListener(function() {
     adjustMapTop(map);
   });
+
+  initUpDownButtons();
 }
 
 function initScrollListener(markers, map) {
@@ -62,6 +64,31 @@ function initScrollListener(markers, map) {
     adjustMapTop(map);
     showCurrentArticleMarkerDebounced();
 	});
+}
+
+function scrollToPost(offset) {
+  var currentArticle = computeCurrentArticle();
+
+  if (!currentArticle) {
+    return;
+  }
+
+  var articleIdx = getArticleIdx(currentArticle);
+  var targetPostId = 'post-' + (articleIdx + offset);
+
+  if (document.getElementById(targetPostId)) {
+    document.location.hash = targetPostId;
+  }
+}
+
+function initUpDownButtons() {
+  document.getElementById('button-prev').addEventListener('click', function() {
+    scrollToPost(1);
+  });
+
+  document.getElementById('button-next').addEventListener('click', function() {
+    scrollToPost(-1);
+  });
 }
 
 function initLazyLoading() {
@@ -332,7 +359,7 @@ function fetchMarkers() {
 
 	forAllArticles(function(i, article, nArticles) {
 		var pos = article.getAttribute('data-position');
-		var idx = article.getAttribute('data-index');
+		var idx = getArticleIdx(article);
 
 		if (!pos)
 			return true;
@@ -407,8 +434,12 @@ function adjustMapTop(map) {
 	map.resize();
 }
 
+function getArticleIdx(article) {
+	return Number(article.getAttribute('data-index'));
+}
+
 function getArticleMarker(markers, article) {
-	var idx = article.getAttribute('data-index');
+	var idx = getArticleIdx(article);
 
   if (!idx) {
     return null;
