@@ -13,9 +13,19 @@ function bindEvent(obj, event, func) {
 	}
 }
 
-bindEvent(window, 'load', init);
+function debounce(func, delay) {
+  var timeoutId;
 
-var map;
+  return function() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(func, delay);
+  };
+}
+
+bindEvent(window, 'load', init);
 
 function init() {
 	"use strict";
@@ -24,14 +34,33 @@ function init() {
 	initLightbox();
     initServiceWorker();
 	var markers = fetchMarkers();
-	map = initMap(markers);
+  var currentArticle = computeCurrentArticle();
+	var map = initMap(markers, currentArticle);
 
-  adjustMapTop();
-	showMarkerForCurrentArticle(markers, true);
+  adjustMapTop(map);
+  initScrollListener(markers, map);
+
+  fullsizeMediaQuery.addListener(function() {
+    adjustMapTop(map);
+  });
+}
+
+function initScrollListener(markers, map) {
+  var showCurrentArticleMarkerDebounced = debounce(function() {
+    var currentArticle = computeCurrentArticle();
+
+    if (currentArticle) {
+      var marker = getArticleMarker(markers, currentArticle);
+
+      if (marker) {
+        map.panTo(marker.getLngLat(), {animate: true});
+      }
+    }
+  }, 300);
 
 	bindEvent(window, 'scroll', function() {
-    adjustMapTop();
-		showMarkerForCurrentArticle(markers, false);
+    adjustMapTop(map);
+    showCurrentArticleMarkerDebounced();
 	});
 }
 
@@ -209,7 +238,7 @@ function forAllArticles(callback) {
 	}
 }
 
-function initMap(markers) {
+function initMap(markers, currentArticle) {
 	"use strict";
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoiYWJ1c3RhbnkiLCJhIjoiXzRMaXJZTSJ9.O90zsWmkzkJuUhbg6ASDKg';
@@ -228,6 +257,57 @@ function initMap(markers) {
   document.getElementById('map-toggle').addEventListener('click', function() {
     document.getElementById('map').classList.toggle('map-hidden');
   });
+
+  // Pan the map to the current article, if any
+
+  var currentMarker = currentArticle && getArticleMarker(markers, currentArticle);
+
+  if (!currentMarker && currentArticle) {
+    // The article had no position, find the first article below the current
+    // one with a position
+
+    var currentArticleTop = currentArticle.getBoundingClientRect().top;
+
+    forAllArticles(function (idx, article, nArticles) {
+      var bb = article.getBoundingClientRect();
+
+      if (bb.top <= currentArticleTop) {
+        // Above the current article, skip it
+        return true;
+      }
+
+      currentMarker = getArticleMarker(markers, article);
+
+      if (currentMarker) {
+        // We found a position, stop iterating
+        return false;
+      }
+
+      // Keep iterating
+      return true;
+    });
+  }
+
+  if (!currentMarker) {
+    // Either there was no current article, or we found no article with a
+    // position below the current one. Scan all articles from the beginning for
+    // one with a position.
+    forAllArticles(function (idx, article, nArticles) {
+      currentMarker = getArticleMarker(markers, article);
+
+      if (currentMarker) {
+        // We found a position, stop iterating
+        return false;
+      }
+
+      // Keep iterating
+      return true;
+    });
+  }
+
+  if (currentMarker) {
+    map.panTo(currentMarker.getLngLat(), {animate: false});
+  }
 
 	return map;
 }
@@ -305,11 +385,7 @@ function getWindowHeight() {
 
 var fullsizeMediaQuery = window.matchMedia('(min-device-width: 500px)');
 
-fullsizeMediaQuery.addListener(function() {
-  adjustMapTop();
-});
-
-function adjustMapTop() {
+function adjustMapTop(map) {
 	"use strict";
 
   var mapDiv = document.getElementById('map');
@@ -331,77 +407,50 @@ function adjustMapTop() {
 	map.resize();
 }
 
-var panTimeoutId = null;
-var lastShownMarker = null;
+function getArticleMarker(markers, article) {
+	var idx = article.getAttribute('data-index');
 
-function showMarkerForCurrentArticle(markers, lookBelow) {
-	"use strict";
+  if (!idx) {
+    return null;
+  }
 
-	var windowHeight = getWindowHeight();
-	var topMost = null;
-	var minYPost = null;
-	var minYDistance = null;
+  return markers[idx] || null;
+}
+
+// Returns the DOM node of the article on screen
+function computeCurrentArticle() {
+  "use strict";
+
+  // Articles with the top of their bounding box above this limit are
+  // considered to be the current ones.
+	var scrollLimit = getWindowHeight()*2/3;
+  var current = null;
 
 	forAllArticles(function (idx, article, nArticles) {
 		var bb = article.getBoundingClientRect();
 
-		if (minYPost === null || (minYDistance < bb.top && bb.top < 0)) {
-			minYDistance = bb.top;
-			minYPost = article;
-		}
+    if (bb.top > scrollLimit) {
+      // This article (and all the following ones) are below the scroll limit,
+      // we can stop iterating.
+      return false;
+    }
 
-		// Stop as soon as we find an article that is in the window
-		if (bb.top > 0 && ((bb.top < windowHeight) || lookBelow)) {
-			topMost = article;
+    if (bb.top >= 0) {
+      // First article with its title on screen and above the scroll limit, pick
+      // it.
+      current = article;
+      return false;
+    }
 
-			// Only break the loop if we have a marker for this post
-			if (showMarkerForArticle(markers, article))
-				return false;
-		}
+    // The article is above the screen, pick it if parts of its contents are
+    // visible and continue iterating for a potential better candidate.
+    if (bb.bottom >= 0) {
+      // Some part of the article is visible
+      current = article;
+    }
 
-		return true;
-	});
+    return true;
+  });
 
-	// If we have an article on screen but it has no position, do nothing except
-	// if we never centered the map
-	if (topMost !== null && lastShownMarker !== null)
-		return;
-
-	// If we have no article title on screen, pick the one that's closest to the
-	// top edge
-
-	// Maybe we have no posts at all?
-	if (minYPost === null) {
-		return;
-	}
-
-	showMarkerForArticle(markers, minYPost);
-}
-
-function showMarkerForArticle(markers, article) {
-	"use strict";
-
-	var idx = article.getAttribute('data-index');
-
-	if (!idx)
-		return false;
-
-	var marker = markers[idx];
-
-	if (!marker)
-		return false;
-
-	if (panTimeoutId) {
-		clearTimeout(panTimeoutId);
-	}
-
-	// The pan call is animated, therefore we need to "debounce" the calls to
-	// avoid jumping all around
-	panTimeoutId = setTimeout(function() {
-		map.panTo(marker.getLngLat(), {animate: true});
-	}, 300);
-
-	lastShownMarker = marker;
-
-	return true;
+  return current;
 }
