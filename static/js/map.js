@@ -292,6 +292,7 @@ function initMap(markers, currentArticle) {
       // Remove any computed top when applying the class
       document.getElementById('map').style.top = 'auto';
       el.src = 'icons/expand.svg';
+      map.resize();
     } else {
       // Recompute the map top when removing the class
       adjustMapTop(map);
