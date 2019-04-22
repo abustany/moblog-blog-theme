@@ -110,6 +110,10 @@ p.post-date {
 	height: 1.6em;
 }
 
+#map-collapse {
+	display: none;
+}
+
 #map {
 	position: fixed;
 	left: 0;

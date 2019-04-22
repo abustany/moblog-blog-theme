@@ -285,6 +285,20 @@ function initMap(markers, currentArticle) {
     document.getElementById('map').classList.toggle('map-hidden');
   });
 
+  document.getElementById('map-collapse').addEventListener('click', function() {
+    var el = document.getElementById('map-collapse');
+
+    if (document.body.classList.toggle('map-collapsed')) {
+      // Remove any computed top when applying the class
+      document.getElementById('map').style.top = 'auto';
+      el.src = 'icons/expand.svg';
+    } else {
+      // Recompute the map top when removing the class
+      adjustMapTop(map);
+      el.src = 'icons/collapse.svg';
+    }
+  });
+
   // Pan the map to the current article, if any
 
   var currentMarker = currentArticle && getArticleMarker(markers, currentArticle);
@@ -414,6 +428,10 @@ var fullsizeMediaQuery = window.matchMedia('(min-device-width: 500px)');
 
 function adjustMapTop(map) {
 	"use strict";
+
+  if (document.body.classList.contains('map-collapsed')) {
+    return;
+  }
 
   var mapDiv = document.getElementById('map');
   var mapTop;

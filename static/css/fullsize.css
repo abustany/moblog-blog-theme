@@ -19,6 +19,26 @@ article.post {
 	display: none;
 }
 
+#map-collapse {
+	display: block;
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+	padding: 6px;
+	background-color: #fff;
+	color: black;
+	cursor: pointer;
+	width: 18px;
+
+	/* Values below copied on the mapbox controls */
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+}
+
+#map-collapse:hover {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
 #map {
 	position: fixed;
 	left: auto;
@@ -35,4 +55,44 @@ article.post {
 
 #footer {
 	width: 40%;
+}
+
+/* Map collapsed mode */
+
+body.map-collapsed {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.map-collapsed article.post {
+	width: 50rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.map-collapsed .image-frame {
+	text-align: center;
+}
+
+.map-collapsed .image-frame a {
+	right: 0;
+}
+
+.map-collapsed .image-frame img, .map-collapsed .image-frame svg {
+	max-height: 30rem;
+	max-width: 30rem;
+}
+
+.map-collapsed #map {
+	position: fixed;
+	top: auto;
+	right: 0;
+	bottom: 0;
+	left: auto;
+	width: 10rem;
+	height: 10rem;
+}
+
+.map-collapsed #footer {
+	width: 100%;
 }
