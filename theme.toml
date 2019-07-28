@@ -1,6 +1,6 @@
 author = "Adrien Bustany"
-description = "Theme for the Salam blog"
+description = "Theme for Moblog blogs"
 license = "MIT"
-name = "salam"
+name = "moblog"
 source_repo = ""
 tags = []
